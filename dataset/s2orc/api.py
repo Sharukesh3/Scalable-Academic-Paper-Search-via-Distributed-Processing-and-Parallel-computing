@@ -1,37 +1,63 @@
-from urllib.parse import urlparse, unquote
 import requests
-import json
-import subprocess
 import os
+import subprocess
+from urllib.parse import urlparse, unquote
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-base_url = "https://api.semanticscholar.org/datasets/v1/release/"
+# Config
+BASE_URL = "https://api.semanticscholar.org/datasets/v1/release/"
+API_KEY = "<Enter your api_key"
+HEADERS = {"x-api-key": API_KEY}
+RELEASE_ID = "2025-08-12"
+DATASET_NAME = "s2orc"
+SAVE_DIR = "/dist_home/suryansh/BD/dataset/s2orc/s2orc_data"
 
-save_dir = "/dist_home/suryansh/BD/dataset/s2orc/s2orc_dataset"
+os.makedirs(SAVE_DIR, exist_ok=True)
 
-# Make sure the directory exists
-os.makedirs(save_dir, exist_ok=True)
+def get_new_links():
+    """Fetch a fresh list of pre-signed URLs."""
+    url = f"{BASE_URL}{RELEASE_ID}/dataset/{DATASET_NAME}"
+    response = requests.get(url, headers=HEADERS)
+    response.raise_for_status()
+    return response.json().get("files", [])
 
-# This endpoint requires authentication via api key
-api_key = "<Enter your api key>"
-headers = {"x-api-key": api_key}
+def download_file(presigned_url):
+    """Download one file from a pre-signed URL."""
+    filename = unquote(os.path.basename(urlparse(presigned_url).path))
+    save_path = os.path.join(SAVE_DIR, filename)
 
-# Set the release id
-release_id = "2025-07-22"
+    if os.path.exists(save_path):
+        print(f"Already exists: {filename}, skipping.")
+        return
 
-# Define dataset name you want to download
-dataset_name = 's2orc'
+    print(f"Downloading: {filename}")
+    result = subprocess.run(["curl", "-C", "-", "-L", "-o", save_path, presigned_url])
+    if result.returncode == 0:
+        print(f"Finished: {filename}")
+    else:
+        print(f"Failed: {filename}")
 
-# Send the GET request and store the response in a variable
-response = requests.get(base_url + release_id + '/dataset/' + dataset_name, headers=headers)
-files_list = response.json().get("files")
-# Download each file to the desired path
-for url in files_list:
-    # Parse the URL and strip query parameters
-    parsed_url = urlparse(url)
-    filename = os.path.basename(parsed_url.path)
-    filename = unquote(filename)  # decode %2F etc.
+def download_in_batches(batch_size=10, workers=4):
+    """Download dataset in small batches with fresh links each time."""
+    index = 0
+    while True:
+        files_list = get_new_links()
+        if index >= len(files_list):
+            print("All files processed.")
+            break
 
-    save_path = os.path.join(save_dir, filename)
-    print(f"Downloading: {url} to {save_path}")
+        batch = files_list[index:index+batch_size]
+        if not batch:
+            print("No more files in this batch.")
+            break
 
-    subprocess.run(["curl", "-L", "-o", save_path, url])
+        print(f"\n=== Batch {index} → {index+len(batch)-1} ===")
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = [executor.submit(download_file, u) for u in batch]
+            for f in as_completed(futures):
+                f.result()
+
+        index += batch_size
+
+# Run downloader
+download_in_batches(batch_size=10, workers=4)

@@ -3,6 +3,7 @@
 /dataset/CORE/core_2018_metadata_extracted
 /dataset/CORE/zip
 /dataset/s2orc/paper_data
-/dataset/s2orc/s2orc_dataset
+/dataset/s2orc/paper_data_ectracted/
+/dataset/s2orc/s2orc_data/
 /spark
 *.log
