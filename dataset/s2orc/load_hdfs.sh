@@ -11,7 +11,7 @@
 source ~/.bashrc
 
 #Change to the directory containing your code, if necessary
-cd /dist_home/suryansh/BD/dataset/s2orc/paper_data_ectracted
+cd /dist_home/suryansh/BD/dataset/s2orc/s2orc_data_ectracted
 
 # Path to your conda installation
 CONDA_PATH="$HOME/miniforge3"
@@ -27,7 +27,7 @@ echo $(nproc)
 xargs --version
 
 LOGFILE="uploaded_files.log"
-TARGET_DIR="/s2orc_paper_data_extracted"
+TARGET_DIR="/s2orc_s2orc_data_extracted"
 
 # export logfile so parallel jobs can append safely
 touch "$LOGFILE"
