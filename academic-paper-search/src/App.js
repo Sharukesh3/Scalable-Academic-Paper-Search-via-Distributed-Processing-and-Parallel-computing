@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Search,
-  Filter,
   BookOpen,
   User,
   Calendar,
@@ -9,7 +8,6 @@ import {
   Bookmark,
   ChevronDown,
   ChevronUp,
-  X,
 } from "lucide-react";
 
 // Mock data for demonstration
@@ -114,7 +112,6 @@ const subjects = [
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState(mockPapers);
-  const [showFilters, setShowFilters] = useState(false);
   const [savedPapers, setSavedPapers] = useState(new Set());
   const [sortBy, setSortBy] = useState("relevance");
   const [currentPage, setCurrentPage] = useState(1);
