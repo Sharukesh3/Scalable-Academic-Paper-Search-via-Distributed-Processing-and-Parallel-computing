@@ -1,0 +1,47 @@
+*   [33mcommit c0a1ebf95a549a262ffdcd1e66b6f5eebd3d9a21[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+[31m|[m[32m\[m  Merge: ea75842 3b11810
+[31m|[m [32m|[m Author: Sharukesh M <153160342+Sharukesh3@users.noreply.github.com>
+[31m|[m [32m|[m Date:   Sun Aug 31 08:09:44 2025 +0530
+[31m|[m [32m|[m 
+[31m|[m [32m|[m     Merge pull request #3 from Sharukesh3/dataset-handling
+[31m|[m [32m|[m     
+[31m|[m [32m|[m     Dataset handling
+[31m|[m [32m|[m 
+[31m|[m * [33mcommit 3b11810af51f63abbcccb5000e7349de3f6b0a82[m[33m ([m[1;31morigin/dataset-handling[m[33m)[m
+[31m|[m [32m|[m Author: Sharukesh3 <prosharu3706@gmail.com>
+[31m|[m [32m|[m Date:   Sun Aug 31 08:04:15 2025 +0530
+[31m|[m [32m|[m 
+[31m|[m [32m|[m     Final touches
+[31m|[m [32m|[m 
+[31m|[m * [33mcommit 44177a4f46cdaa5290616db63dc34e474c213011[m
+[31m|[m [32m|[m Author: Sharukesh3 <prosharu3706@gmail.com>
+[31m|[m [32m|[m Date:   Thu Aug 28 23:23:06 2025 +0530
+[31m|[m [32m|[m 
+[31m|[m [32m|[m     dataset_cleaning
+[31m|[m [32m|[m 
+[31m|[m * [33mcommit 73fd2dbbfb4e3f3da4def7115df323657bcf09f4[m
+[31m|[m [32m|[m Author: Sharukesh3 <prosharu3706@gmail.com>
+[31m|[m [32m|[m Date:   Fri Aug 22 12:47:29 2025 +0530
+[31m|[m [32m|[m 
+[31m|[m [32m|[m     Add HDFS, Spark, and datasets; load into HDFS
+[31m|[m [32m|[m   
+* [32m|[m   [33mcommit ea7584242e500f2a9eac0c57d7a5aea8383f279f[m
+[32m|[m[34m\[m [32m\[m  Merge: 8c545eb 93bafad
+[32m|[m [34m|[m[32m/[m  Author: Devarajan S <153832931+DevaRajan8@users.noreply.github.com>
+[32m|[m[32m/[m[34m|[m   Date:   Sat Aug 23 12:20:27 2025 +0530
+[32m|[m [34m|[m   
+[32m|[m [34m|[m       Merged pull request #2 from Sharukesh3/update-readme-status
+[32m|[m [34m|[m       
+[32m|[m [34m|[m       Revised README File with Status and Tech Stacks
+[32m|[m [34m|[m 
+[32m|[m * [33mcommit 93bafad998f7d2160970768dff35395f3968f0b1[m
+[32m|[m[32m/[m  Author: DevaRajan8 <rdeva6046@gmail.com>
+[32m|[m   Date:   Sat Aug 23 12:17:07 2025 +0530
+[32m|[m   
+[32m|[m       Revised README File with Status and Tech Stacks
+[32m|[m 
+* [33mcommit 8c545ebf8728fcb98c60bd809004d5b0ffb0717f[m
+  Author: Sharukesh3 <prosharu3706@gmail.com>
+  Date:   Fri Aug 22 12:45:37 2025 +0530
+  
+      first commit
