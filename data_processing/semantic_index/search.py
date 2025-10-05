@@ -1,34 +1,53 @@
-# search.py
 import faiss
 import numpy as np
-import pickle
+import pandas as pd
 from sentence_transformers import SentenceTransformer
+import pickle
+import os
 
-# --- 1. Load Everything ---
+# --- 1. Configuration ---
+MODEL_NAME = 'allenai/scibert_scivocab_uncased' 
+INDEX_PATH = "s2orc_scibert_index_ivfpq.faiss"
+# This script is designed to use the richer mapping file with both IDs and titles.
+MAPPING_PATH = "s2orc_scibert_mapping.pkl"
+
+# --- 2. Search Parameters ---
+QUERY_TEXT = "The role of neural networks in analyzing genomic data"
+TOP_K = 10 
+
+# --- 3. Load the Index and Mapping ---
 print("Loading model, index, and mapping...")
-model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
-index = faiss.read_index("s2orc_index.faiss")
-with open("s2orc_id_mapping.pkl", 'rb') as f:
-    id_title_mapping = pickle.load(f)
+if not os.path.exists(INDEX_PATH) or not os.path.exists(MAPPING_PATH):
+    print(f"Error: Index ('{INDEX_PATH}') or Mapping ('{MAPPING_PATH}') file not found.")
+    print("Please ensure you have run the 'build_index_production.py' script that creates the .pkl file.")
+    exit()
 
-# --- 2. Perform a Search ---
-query_text = "The impact of machine learning on medical diagnostics"
-k = 5 # Number of results to retrieve
+model = SentenceTransformer(MODEL_NAME)
+index = faiss.read_index(INDEX_PATH)
 
-print(f"\nSearching for top {k} results for query: '{query_text}'")
+# Load the dictionary mapping from the pickle file
+with open(MAPPING_PATH, 'rb') as f:
+    id_and_title_map = pickle.load(f)
 
-# Convert query to vector
-query_vector = model.encode([query_text], normalize_embeddings=True).astype('float32')
+# --- 4. Set the nprobe Parameter (Crucial for IVF Index) ---
+# nprobe is the number of partitions to search. Higher is more accurate but slower.
+index.nprobe = 64
+print(f"Set index.nprobe to {index.nprobe} for searching.")
 
-# Search the index
-# D = distances, I = indices
-distances, indices = index.search(query_vector, k)
+# --- 5. Perform the Search ---
+print(f"\nSearching for top {TOP_K} results for query: '{QUERY_TEXT}'")
+query_vector = model.encode([QUERY_TEXT], normalize_embeddings=True).astype('float32')
+distances, indices = index.search(query_vector, TOP_K)
 
-# --- 3. Display Results ---
-print("\nResults:")
+# --- 6. Display Results ---
+# The title lookup is now fast and simple, reading directly from the loaded dictionary.
+print("\n--- SciBERT Search Results ---")
 for i, idx in enumerate(indices[0]):
-    # Use the mapping to get the original paper_id and title
-    original_paper_id, title = id_title_mapping[idx]
-    distance = distances[0][i]
+    # Look up the paper_id and title directly from the mapping dictionary
+    # The dictionary maps: FAISS_index_position -> (paper_id, title)
+    paper_id, title = id_and_title_map.get(idx, (-1, "Title not found for this index position"))
+    distance = distances[0][i] 
+    
     print(f"{i+1}. Title: {title}")
-    print(f"   (FAISS Index: {idx}, Paper ID: {original_paper_id}, Distance: {distance:.4f})")
+    print(f"   (Paper ID: {paper_id}, Approx. Distance: {distance:.4f})")
+

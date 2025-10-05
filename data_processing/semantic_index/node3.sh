@@ -24,4 +24,4 @@ conda activate spark_env
 
 #Download plz work
 echo $(nproc)
-python build_index.py
+python search.py
