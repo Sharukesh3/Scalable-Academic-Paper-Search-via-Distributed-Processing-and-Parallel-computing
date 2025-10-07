@@ -116,6 +116,8 @@ function App() {
   const [sortBy, setSortBy] = useState("relevance");
   const [currentPage, setCurrentPage] = useState(1);
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiMessage, setApiMessage] = useState("");
 
   // Filter states
   const [filters, setFilters] = useState({
@@ -135,7 +137,33 @@ function App() {
     return () => clearTimeout(timeoutId);
   }, [searchQuery, filters, sortBy]);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
+    if (searchQuery.trim()) {
+      setIsLoading(true);
+      setApiMessage("");
+
+      try {
+        const response = await fetch(
+          `http://localhost:5000/search?q=${encodeURIComponent(searchQuery)}`
+        );
+        const data = await response.json();
+
+        // Display the message from API
+        if (data.message) {
+          setApiMessage(data.message);
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Search error:", error);
+        setApiMessage("Error connecting to search engine");
+        setIsLoading(false);
+      }
+    } else {
+      setApiMessage("");
+    }
+
+    // Still do local filtering for now
     let results = mockPapers.filter((paper) => {
       // Text search
       const searchLower = searchQuery.toLowerCase();
@@ -269,6 +297,25 @@ function App() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
+
+          {/* API Message Display */}
+          {apiMessage && (
+            <div className="max-w-3xl mx-auto mt-4">
+              <div className="bg-gradient-to-r from-indigo-100 to-purple-100 border-2 border-indigo-300 rounded-xl p-6 shadow-lg">
+                <p className="text-indigo-900 text-center text-lg font-semibold">
+                  {apiMessage}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Loading Indicator */}
+          {isLoading && (
+            <div className="max-w-3xl mx-auto mt-4 text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+              <p className="text-indigo-600 mt-2 font-medium">Searching...</p>
+            </div>
+          )}
 
           <div className="flex justify-center mt-6 space-x-4">
             <button
