@@ -1,98 +1,126 @@
+import json
 import pandas as pd
 import numpy as np
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import pandas_udf, col, lit
-from pyspark.sql.types import FloatType
+from pyspark.sql.functions import col, pandas_udf, explode, lit, spark_partition_id
+# Import the necessary UDF type
+from pyspark.sql.functions import PandasUDFType
+from pyspark.sql.types import StructType, StructField, LongType, FloatType
+from scipy.sparse import csr_matrix
 from bm25_scorer import BM25Scorer
-from typing import Iterator, Iterable
 
 # --- 1. Configuration ---
-# NOTE: These paths would point to the output of your pre-computation job
-PRECOMPUTED_FEATURES_PATH = "hdfs:///s2orc_lexical_index/lexical_index_title.parquet"
-# This would be a small file containing corpus-wide stats
-CORPUS_STATS_PATH = "hdfs:///path/to/your/corpus_stats.json" 
+# **FIXED**: Updated paths to match the output of your pre-computation job
+CORPUS_STATS_PATH = "hdfs:///s2orc_bm_25/corpus_stats.json"
+FEATURES_PATH = "hdfs:///s2orc_bm_25/precomputed_features.parquet"
+# This path is for looking up the final titles
+ORIGINAL_DATA_PATH = "hdfs:///s2orc_paper_data_cleaned/s2orc_paper_data_cleaned.parquet"
 
+
+# --- 2. Search Parameters ---
 QUERY_TEXT = "machine learning in medicine"
-K1 = 1.5
-B = 0.75
+TOP_N = 10
+BM25_K1 = 1.5
+BM25_B = 0.75
 
-# --- 2. Spark Session ---
+# --- 3. Spark Session ---
 spark = SparkSession.builder \
-    .appName("BM25 Searcher with CUDA") \
-    .master("spark://asaicomputenode03.amritanet.edu:7077") \
+    .appName("BM25 Searcher") \
+    .master("spark://asaicomputenode02.amritanet.edu:7077") \
     .getOrCreate()
 
-# --- 3. Mock Data Generation (Replace with actual data loading) ---
-# In a real scenario, you would load pre-computed data.
-# For this example, we'll create mock data to demonstrate the process.
-print("Creating mock data (replace this with HDFS loading)...")
-# Let's assume we have a vocabulary: {'machine':0, 'learning':1, 'medicine':2, 'paper':3}
-# Doc 1: "machine learning paper"
-# Doc 2: "learning in medicine"
-# Doc 3: "a paper about medicine"
-mock_data = [
-    (101, 15, {0: 1, 1: 1, 3: 1}), # coreId, doc_length, {term_id: tf}
-    (102, 18, {1: 1, 2: 1}),
-    (103, 22, {3: 1, 2: 1}),
-]
-precomputed_df = spark.createDataFrame(mock_data, ["coreId", "doc_length", "term_freqs"])
+# --- 4. Load Pre-computed Data ---
+print("Loading pre-computed corpus data...")
+# Load the JSON stats into a Python dictionary
+stats_rdd = spark.read.text(CORPUS_STATS_PATH).rdd
+stats_json_str = stats_rdd.map(lambda row: row.value).collect()[0]
+corpus_stats = json.loads(stats_json_str)
 
-# Mock corpus stats
-# In reality, you'd calculate these once with Spark
-avg_doc_length = 18.3
-# IDF for query terms: 'machine', 'learning', 'medicine'
-idf_map = {0: 0.8, 1: 0.5, 2: 0.9} 
-# Query terms converted to their IDs
-query_term_ids = np.array([0, 1, 2], dtype=np.int32)
-idf_scores = np.array([idf_map[tid] for tid in query_term_ids], dtype=np.float32)
+avg_doc_length = corpus_stats["avgDocLength"]
+idf_map = corpus_stats["idf"]
+vocabulary = corpus_stats["vocabulary"]
+# Create a reverse map for term -> id
+vocab_map = {term: i for i, term in enumerate(vocabulary)}
+# Create an ordered array of IDF scores based on term ID
+idf_scores_array = np.array([idf_map.get(term, 0.0) for term in vocabulary], dtype=np.float32)
 
-# --- 4. Define the CUDA-powered Pandas UDF ---
-# Broadcast the large, shared data to each executor once
-broadcast_query_ids = spark.sparkContext.broadcast(query_term_ids)
-broadcast_idf_scores = spark.sparkContext.broadcast(idf_scores)
+# Load the document features (TF, doc length)
+features_df = spark.read.parquet(FEATURES_PATH)
 
-@pandas_udf(FloatType())
-def calculate_bm25_udf(iterator: Iterator[pd.DataFrame]) -> Iterable[pd.Series]:
-    # This runs once per task: initialize the CUDA scorer
+# --- 5. Prepare Query ---
+print(f"Processing query: '{QUERY_TEXT}'")
+query_terms = [word for word in QUERY_TEXT.lower().split() if word in vocab_map]
+query_term_ids = np.array([vocab_map[word] for word in query_terms], dtype=np.int32)
+
+# --- 6. Define the Scoring UDF (with correct type) ---
+# Define the schema for the output of our UDF
+result_schema = StructType([
+    StructField("coreId", LongType(), True),
+    StructField("score", FloatType(), True)
+])
+
+# **FIXED**: Removed the redundant @pandas_udf decorator.
+# The applyInPandas function will handle the UDF registration.
+def score_partition(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    This UDF will run on each partition of the data on an executor.
+    """
+    # Initialize the CUDA scorer ONCE per partition
     scorer = BM25Scorer()
     
-    # Get the broadcasted query data
-    query_ids = broadcast_query_ids.value
-    idfs = broadcast_idf_scores.value
+    # Extract data from the pandas DataFrame
+    doc_ids = df['coreId'].to_numpy()
+    doc_lengths = df['doc_length'].to_numpy(dtype=np.int32)
     
-    for pdf in iterator:
-        # --- Prepare data for CUDA kernel ---
-        doc_lengths = pdf['doc_length'].to_numpy(dtype=np.int32)
-        
-        # Flatten the term frequencies into a format the kernel can read
-        docs_terms_list = []
-        doc_offsets_list = [0]
-        offset = 0
-        for term_map in pdf['term_freqs']:
-            for term_id, tf in term_map.items():
-                docs_terms_list.append((term_id, float(tf)))
-            offset += len(term_map)
-            doc_offsets_list.append(offset)
+    # Reconstruct the sparse matrix for term frequencies from the map
+    rows, cols, data = [], [], []
+    for i, tf_map in enumerate(df['term_freqs']):
+        if tf_map is None: continue # Skip if a document has no terms
+        for term_id, freq in tf_map.items():
+            rows.append(i)
+            cols.append(term_id)
+            data.append(freq)
             
-        docs_terms = np.array(docs_terms_list, dtype=[('id', 'i4'), ('tf', 'f4')])
-        doc_offsets = np.array(doc_offsets_list, dtype=np.int32)
+    tfs_matrix = csr_matrix((data, (rows, cols)), shape=(len(df), len(vocabulary)))
 
-        # --- Call the CUDA Scorer ---
-        scores = scorer.score_batch(
-            docs_terms, doc_offsets, doc_lengths, 
-            query_ids, idfs, avg_doc_length, K1, B
-        )
-        
-        yield pd.Series(scores)
+    # Call the CUDA scorer
+    scores = scorer.score(
+        query_term_ids,
+        doc_lengths,
+        tfs_matrix,
+        idf_scores_array,
+        k1=BM25_K1,
+        b=BM25_B,
+        avg_doc_length=avg_doc_length
+    )
+    
+    # Return the results as a new pandas DataFrame
+    return pd.DataFrame({'coreId': doc_ids, 'score': scores})
 
-# --- 5. Run the Search ---
-print("Running BM25 search with CUDA acceleration...")
-results_df = precomputed_df.withColumn(
-    "bm25_score",
-    calculate_bm25_udf(col("doc_length"), col("term_freqs"))
-)
+# --- 7. Run the Search ---
+print("Scoring documents using CUDA kernel...")
+# We use `applyInPandas` because we have a Grouped Map UDF
+# Add a partition ID column to group on. We repartition to 1 to ensure all data goes to one GPU.
+results_df = features_df.repartition(1) \
+    .withColumn("partition_id", spark_partition_id()) \
+    .groupby("partition_id") \
+    .applyInPandas(score_partition, schema=result_schema)
 
-print("Search complete. Top results:")
-results_df.orderBy(col("bm25_score").desc()).show()
+# --- 8. Get Top Results and Join for Titles ---
+print("Finding top results...")
+top_results_df = results_df.orderBy(col("score").desc()).limit(TOP_N)
+
+# Load original data to get titles
+original_df = spark.read.parquet(ORIGINAL_DATA_PATH).select("corpusid", "title")
+
+# Join with original data to show titles (aliasing coreId to corpusid for the join)
+final_results = top_results_df.join(
+    original_df,
+    top_results_df.coreId == original_df.corpusid
+).select("coreId", "title", "score")
+
+print(f"\n--- Top {TOP_N} BM25 Results ---")
+final_results.show(truncate=False)
 
 spark.stop()
+
