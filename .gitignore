@@ -8,3 +8,15 @@
 /dataset/s2orc/s2orc_data_ectracted/
 /spark
 *.log
+*.faiss
+*.npy
+/data_processing/semantic_index/s2orc_embeddings_local/
+/data_processing/semantic_index/s2orc_scibert_embeddings_local
+*.pkl
+/data_processing/semantic_index/s2orc_cleaned_data_local/
+*.ipynb_checkpoints/
+*__pycache__
+/data_processing/sciVal_like_features/s2orc_percentile_scores_local/
+/data_processing/sciVal_like_features/s2orc_fwci_scores_local/
+/data_processing/semantic_index/s2orc_id_lookup_table_local/
+package-lock.json
