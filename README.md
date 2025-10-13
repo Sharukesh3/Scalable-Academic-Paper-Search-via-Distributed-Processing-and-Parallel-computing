@@ -1,132 +1,151 @@
 # Scalable Academic Paper Search via Distributed Processing and Parallel Computing
 
-**Status: In Development**
+**Status: ✅ Development Completed**
 
 A high-performance semantic search engine for academic literature that leverages distributed computing and advanced NLP techniques to deliver intelligent paper discovery at scale.
 
-## Overview
+---
 
-This project is developing a scalable academic paper search system designed to handle massive datasets of scholarly publications. By combining semantic understanding with distributed processing capabilities, our goal is to provide researchers with precise, meaning-based search results rather than simple keyword matching.
+## 📘 Overview
 
-The planned system will process millions of academic papers from various sources and create a searchable knowledge base that understands the semantic relationships between different research topics, methodologies, and findings.
+This project delivers a scalable academic paper search system designed to handle massive datasets of scholarly publications. By combining semantic understanding with distributed processing capabilities, it provides researchers with precise, meaning-based search results rather than simple keyword matching.
 
-## Dataset
+The system processes millions of academic papers from various sources and creates a searchable knowledge base that understands the semantic relationships between different research topics, methodologies, and findings.
+
+---
+
+## 🧠 Dataset
 
 This project utilizes the **S2ORC (Semantic Scholar Open Research Corpus)** dataset, a comprehensive collection of academic papers spanning multiple disciplines. S2ORC provides structured metadata and full-text content for millions of scholarly publications.
 
-- **Scale**: Millions of academic papers across various domains
-- **Format**: Structured JSON with metadata and full-text content
-- **Coverage**: Computer Science, Medicine, Biology, Physics, and more
+- **Scale:** Millions of academic papers across various domains  
+- **Format:** Structured JSON with metadata and full-text content  
+- **Coverage:** Computer Science, Medicine, Biology, Physics, and more  
 
-## Planned System Architecture
+---
 
-### Data Collection Pipeline (In Progress)
+## 🏗️ System Architecture
+
+### **Data Collection Pipeline**
 
 - **CORE Dataset**
-
-  - One-time download
+  - One-time download  
   - Massive dataset (static snapshot)
 
 - **S2ORC Dataset**
-  - Supports selective updates
-  - Can fetch data incrementally based on date
-- **Format standardization**: Conversion of various document formats to unified structure
+  - Supports selective updates  
+  - Incremental fetching based on date  
 
-### Text Processing Engine (Development Phase)
+- **Format Standardization:** Converts diverse document formats to a unified structure  
 
-- **Symbol normalization**: Standardization of mathematical notation and special characters
-- **Stopword elimination**: Removal of common words that don't contribute to semantic meaning
-- **Tokenization**: Breaking down text into meaningful units
+---
 
-### Semantic Understanding Layer (Research Phase)
+### **Text Processing Engine**
 
-- **NLP Processing**: Advanced natural language processing to extract semantic meaning
-- **Embedding Generation**: Conversion of textual content into high-dimensional vector representations
-- **Topic Modeling**: Identification of key themes and research areas
-- **Relationship Extraction**: Discovery of connections between concepts and papers
+- **Symbol Normalization:** Standardizes mathematical notation and special characters  
+- **Stopword Elimination:** Removes non-semantic words  
+- **Tokenization:** Breaks down text into meaningful units  
 
-### Vector Database Storage (Evaluation Phase)
+---
 
-Evaluating multiple vector database backends:
+### **Semantic Understanding Layer**
 
-- **FAISS**: Facebook AI Similarity Search for efficient nearest neighbor retrieval
-- **Qdrant**: Vector database optimized for high-performance filtering
-- **Pinecone**: Managed vector database service for production deployments
+- **NLP Processing:** Advanced language understanding  
+- **Embedding Generation:** Converts text to high-dimensional vector representations  
+- **Topic Modeling:** Identifies key research areas  
+- **Relationship Extraction:** Discovers concept and paper-level connections  
 
-### Distributed Computing Framework (Design Phase)
+---
 
-- **Parallel Processing**: Multi-threaded operations for data ingestion and indexing
-- **Load Balancing**: Distribution of search queries across multiple processing nodes
-- **Fault Tolerance**: Robust error handling and recovery mechanisms
-- **Scalability**: Horizontal scaling capabilities to handle growing datasets
+### **Vector Database Storage**
 
-## Planned Features
+- **FAISS:** Facebook AI Similarity Search for efficient nearest neighbor retrieval  
 
-### Semantic Search Capabilities (In Development)
+---
 
-- **Intent Understanding**: Interpret research queries beyond simple keyword matching
-- **Contextual Relevance**: Consider the broader context and domain of research
-- **Citation Analysis**: Incorporate citation networks in relevance scoring
+### **Distributed Computing Framework**
 
-### Advanced Ranking System (Design Phase)
+- **Parallel Processing:** Multi-threaded ingestion and indexing  
+- **Load Balancing:** Distributes search queries across multiple nodes  
+- **Fault Tolerance:** Handles node failures and ensures recovery  
+- **Scalability:** Horizontally scales for large datasets  
 
-- **Semantic Similarity**: Primary ranking based on vector similarity scores
-- **Citation Impact**: Integration of citation counts and paper influence metrics
-- **Recency Weighting**: Adjustable preference for recent publications
-- **Domain Expertise**: Specialized ranking for different academic disciplines
+---
 
-### Performance Optimizations (Future Work)
+## ⚙️ Features
 
-- **Caching Layer**: Intelligent caching of frequent queries and results
-- **Index Optimization**: Efficient data structures for fast retrieval
-- **Batch Processing**: Optimized handling of multiple concurrent searches
-- **Memory Management**: Efficient resource utilization for large-scale operations
+### **Semantic Search Capabilities**
 
-## Development Status
+- **Intent Understanding:** Goes beyond keyword matching  
+- **Contextual Relevance:** Accounts for research context and domain  
+- **Citation Analysis:** Integrates citation networks into relevance scoring  
 
-### Current Phase: Foundation & Architecture
+---
 
-- Setting up development environment
-- Analyzing CORE & S2ORC dataset structure
-- Designing system architecture
-- Evaluating NLP models and vector databases
+### **Advanced Ranking System**
 
-### Completed Tasks
+- **Semantic Similarity:** Core ranking based on vector similarity  
+- **Citation Impact:** Considers citation counts and influence metrics  
+- **Recency Weighting:** Weighs recent publications higher  
+- **Domain Expertise:** Specialized ranking for different disciplines  
 
-- Project initialization and repository setup
-- Literature review of existing academic search systems
-- Dataset acquisition and preliminary analysis
-- Technology stack evaluation
+---
 
-### In Progress
+### **Performance Optimizations**
 
-- Data preprocessing pipeline development
-- NLP model selection and testing
-- Vector database performance comparison
-- Distributed computing framework design
+- **Caching Layer:** Stores frequent queries  
+- **Index Optimization:** Uses efficient retrieval structures  
+- **Batch Processing:** Handles concurrent searches  
+- **Memory Management:** Optimizes large-scale data operations  
 
-### Upcoming Milestones
+---
 
-- Complete data preprocessing pipeline
-- Implement basic semantic search functionality
-- Deploy initial vector database setup
-- Begin parallel processing implementation
-- Develop web API interface
+## 🚀 Development Status
 
-## Technology Stack
+### ✅ **Completed**
 
-### Planned Core Technologies
+- Project initialization and repository setup  
+- Literature review of existing academic search systems  
+- Dataset acquisition and preliminary analysis  
+- Technology stack evaluation  
+- Data preprocessing pipeline development  
+- NLP model selection and testing  
+- Vector database performance comparison  
+- Distributed computing framework design  
+- Complete data preprocessing pipeline  
+- Implemented semantic search functionality  
+- Deployed FAISS vector database setup  
+- Parallel processing implementation  
+- Web API interface deployment  
 
-- **Programming Language**: Python 3.12
-- **NLP Framework**: Transformers, spaCy, NLTK (under evaluation)
-- **Vector Processing**: NumPy, SciPy, scikit-learn
-- **Database Systems**: PostgreSQL, Redis (for caching)
-- **Distributed Computing**: Apache Spark
-- **API Framework**: FastAPI
+---
 
-### Machine Learning Models (Under Research)
+## 🧩 Technology Stack
 
-- **Text Embeddings**: BERT, SciBERT, Sentence-BERT
-- **Topic Modeling**: LDA, BERTopic
-- **Similarity Metrics**: Cosine similarity
-- **Ranking Models**: Learning-to-rank algorithms
+- **Language:** Python 3.12  
+- **NLP Framework:** Transformers  
+- **Vector Processing:** NumPy, FAISS  
+- **Databases:** PostgreSQL, Redis *(for caching — planned)*  
+- **Distributed Computing:** Apache Spark  
+- **API Framework:** FastAPI  
+
+---
+
+## 🧠 Machine Learning Models
+
+- **Text Embeddings:** SciBERT  
+- **Topic Modeling:** KNN  
+- **Similarity Metric:** Cosine Similarity  
+- **Ranking Algorithms:** FWCI and Top-percentile  
+
+---
+
+## 🎥 Demo Video
+
+A short demonstration of the system in action is available below:
+
+👉 [**Watch Demo**](./Demo.mp4)
+
+*(Located in the root directory as `Demo.mp4`)*
+
+---
