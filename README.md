@@ -1,132 +1,150 @@
 # Scalable Academic Paper Search via Distributed Processing and Parallel Computing
 
-**Status: In Development**
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![Status](https://img.shields.io/badge/Status-Development%20Completed-success)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Framework](https://img.shields.io/badge/Framework-FastAPI-orange)
+![Compute](https://img.shields.io/badge/Distributed-Apache%20Spark-red)
+![Database](https://img.shields.io/badge/Vector%20DB-FAISS-lightgrey)
 
-A high-performance semantic search engine for academic literature that leverages distributed computing and advanced NLP techniques to deliver intelligent paper discovery at scale.
+---
 
-## Overview
+A high-performance **semantic search engine** for academic literature that leverages **distributed computing** and **advanced NLP techniques** to deliver intelligent paper discovery at scale.
 
-This project is developing a scalable academic paper search system designed to handle massive datasets of scholarly publications. By combining semantic understanding with distributed processing capabilities, our goal is to provide researchers with precise, meaning-based search results rather than simple keyword matching.
+---
 
-The planned system will process millions of academic papers from various sources and create a searchable knowledge base that understands the semantic relationships between different research topics, methodologies, and findings.
+## 📘 Overview
 
-## Dataset
+This project provides a **scalable academic paper search system** designed to process millions of scholarly publications efficiently.  
+By combining **semantic understanding** with **distributed processing**, it enables meaning-based, context-aware search — far beyond simple keyword matching.
 
-This project utilizes the **S2ORC (Semantic Scholar Open Research Corpus)** dataset, a comprehensive collection of academic papers spanning multiple disciplines. S2ORC provides structured metadata and full-text content for millions of scholarly publications.
+---
 
-- **Scale**: Millions of academic papers across various domains
-- **Format**: Structured JSON with metadata and full-text content
-- **Coverage**: Computer Science, Medicine, Biology, Physics, and more
+## 🧠 Dataset
 
-## Planned System Architecture
+The system is powered by the **S2ORC (Semantic Scholar Open Research Corpus)** — a massive, multi-domain dataset of academic papers.
 
-### Data Collection Pipeline (In Progress)
+- **Scale:** Millions of papers  
+- **Format:** Structured JSON (metadata + full text)  
+- **Coverage:** Computer Science, Medicine, Biology, Physics, and more  
 
-- **CORE Dataset**
+---
 
-  - One-time download
-  - Massive dataset (static snapshot)
+<details>
+<summary>🏗️ <b>System Architecture (Click to Expand)</b></summary>
 
-- **S2ORC Dataset**
-  - Supports selective updates
-  - Can fetch data incrementally based on date
-- **Format standardization**: Conversion of various document formats to unified structure
+### **1️⃣ Data Collection Pipeline**
+- **CORE Dataset:** One-time static download  
+- **S2ORC Dataset:** Supports incremental updates  
+- **Format Standardization:** Unifies metadata and full-text structures  
 
-### Text Processing Engine (Development Phase)
+### **2️⃣ Text Processing Engine**
+- **Symbol Normalization:** Standardizes mathematical notation  
+- **Stopword Elimination:** Removes uninformative tokens  
+- **Tokenization:** Splits text into meaningful units  
 
-- **Symbol normalization**: Standardization of mathematical notation and special characters
-- **Stopword elimination**: Removal of common words that don't contribute to semantic meaning
-- **Tokenization**: Breaking down text into meaningful units
+### **3️⃣ Semantic Understanding Layer**
+- **NLP Processing:** Extracts semantic meaning  
+- **Embedding Generation:** Converts text into vector representations  
+- **Topic Modeling:** Identifies themes and domains  
+- **Relationship Extraction:** Finds links between papers and concepts  
 
-### Semantic Understanding Layer (Research Phase)
+### **4️⃣ Vector Database Storage**
+- **FAISS (Facebook AI Similarity Search):** High-speed vector similarity retrieval  
 
-- **NLP Processing**: Advanced natural language processing to extract semantic meaning
-- **Embedding Generation**: Conversion of textual content into high-dimensional vector representations
-- **Topic Modeling**: Identification of key themes and research areas
-- **Relationship Extraction**: Discovery of connections between concepts and papers
+### **5️⃣ Distributed Computing Framework**
+- **Parallel Processing:** Multi-threaded indexing and queries  
+- **Load Balancing:** Equitable distribution of query load  
+- **Fault Tolerance:** Auto-recovery from node failure  
+- **Scalability:** Supports horizontal scaling across clusters  
 
-### Vector Database Storage (Evaluation Phase)
+</details>
 
-Evaluating multiple vector database backends:
+---
 
-- **FAISS**: Facebook AI Similarity Search for efficient nearest neighbor retrieval
-- **Qdrant**: Vector database optimized for high-performance filtering
-- **Pinecone**: Managed vector database service for production deployments
+<details>
+<summary>⚙️ <b>Features (Click to Expand)</b></summary>
 
-### Distributed Computing Framework (Design Phase)
+### 🔍 **Semantic Search Capabilities**
+- **Intent Understanding:** Goes beyond keyword matching  
+- **Contextual Relevance:** Considers domain and topic hierarchy  
+- **Citation Analysis:** Integrates citation networks for scoring  
 
-- **Parallel Processing**: Multi-threaded operations for data ingestion and indexing
-- **Load Balancing**: Distribution of search queries across multiple processing nodes
-- **Fault Tolerance**: Robust error handling and recovery mechanisms
-- **Scalability**: Horizontal scaling capabilities to handle growing datasets
+### 🧮 **Advanced Ranking System**
+- **Semantic Similarity:** Vector-based ranking  
+- **Citation Impact:** Paper influence weighting  
+- **Recency Weighting:** Prioritizes newer work  
+- **Domain Expertise:** Discipline-specific ranking  
 
-## Planned Features
+### 🚀 **Performance Optimizations**
+- **Caching Layer:** Intelligent query caching (Redis planned)  
+- **Index Optimization:** Memory-efficient FAISS indexing  
+- **Batch Processing:** Handles concurrent query streams  
+- **Memory Management:** Adaptive resource utilization  
 
-### Semantic Search Capabilities (In Development)
+</details>
 
-- **Intent Understanding**: Interpret research queries beyond simple keyword matching
-- **Contextual Relevance**: Consider the broader context and domain of research
-- **Citation Analysis**: Incorporate citation networks in relevance scoring
+---
 
-### Advanced Ranking System (Design Phase)
+## 🧩 Technology Stack
 
-- **Semantic Similarity**: Primary ranking based on vector similarity scores
-- **Citation Impact**: Integration of citation counts and paper influence metrics
-- **Recency Weighting**: Adjustable preference for recent publications
-- **Domain Expertise**: Specialized ranking for different academic disciplines
+| Component | Technology |
+|------------|-------------|
+| **Language** | Python 3.12 |
+| **NLP Framework** | Transformers |
+| **Vector Search** | FAISS |
+| **Databases** | PostgreSQL, Redis *(planned)* |
+| **Distributed Computing** | Apache Spark |
+| **API Framework** | FastAPI |
 
-### Performance Optimizations (Future Work)
+---
 
-- **Caching Layer**: Intelligent caching of frequent queries and results
-- **Index Optimization**: Efficient data structures for fast retrieval
-- **Batch Processing**: Optimized handling of multiple concurrent searches
-- **Memory Management**: Efficient resource utilization for large-scale operations
+## 🧠 Machine Learning Models
 
-## Development Status
+| Task | Model / Algorithm |
+|------|--------------------|
+| **Text Embeddings** | SciBERT |
+| **Topic Modeling** | KNN |
+| **Similarity Metric** | Cosine Similarity |
+| **Ranking Algorithms** | FWCI, Top-percentile |
 
-### Current Phase: Foundation & Architecture
+---
 
-- Setting up development environment
-- Analyzing CORE & S2ORC dataset structure
-- Designing system architecture
-- Evaluating NLP models and vector databases
+## ✅ Development Status
 
-### Completed Tasks
+### ✔️ **Completed Milestones**
+- Repository setup and literature review  
+- Dataset acquisition and preprocessing  
+- NLP model benchmarking  
+- Vector database evaluation (FAISS)  
+- Distributed architecture design and implementation  
+- Semantic search functionality  
+- Web API deployment with FastAPI  
+- Parallel processing integration  
+- Demo release  
 
-- Project initialization and repository setup
-- Literature review of existing academic search systems
-- Dataset acquisition and preliminary analysis
-- Technology stack evaluation
+---
 
-### In Progress
+## 🎥 Demo
 
-- Data preprocessing pipeline development
-- NLP model selection and testing
-- Vector database performance comparison
-- Distributed computing framework design
+https://github.com/user-attachments/assets/a5b4bdd9-e218-45d9-a03c-e7516d97aa66
 
-### Upcoming Milestones
+*(Located in the root directory as `Demo.mp4`)*
+---
 
-- Complete data preprocessing pipeline
-- Implement basic semantic search functionality
-- Deploy initial vector database setup
-- Begin parallel processing implementation
-- Develop web API interface
+## 📜 License
 
-## Technology Stack
+This project is released under the [MIT License](LICENSE).
 
-### Planned Core Technologies
+---
 
-- **Programming Language**: Python 3.12
-- **NLP Framework**: Transformers, spaCy, NLTK (under evaluation)
-- **Vector Processing**: NumPy, SciPy, scikit-learn
-- **Database Systems**: PostgreSQL, Redis (for caching)
-- **Distributed Computing**: Apache Spark
-- **API Framework**: FastAPI
+## 💡 Future Directions
 
-### Machine Learning Models (Under Research)
+- 🔹 Integration with Redis caching  
+- 🔹 Continuous dataset ingestion  
+- 🔹 UI dashboard for research discovery  
+- 🔹 Model fine-tuning using citation-based feedback  
 
-- **Text Embeddings**: BERT, SciBERT, Sentence-BERT
-- **Topic Modeling**: LDA, BERTopic
-- **Similarity Metrics**: Cosine similarity
-- **Ranking Models**: Learning-to-rank algorithms
+---
+
+⭐ **If you like this project, consider starring the repo!**
