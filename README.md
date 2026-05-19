@@ -127,13 +127,9 @@ The system is powered by the **S2ORC (Semantic Scholar Open Research Corpus)** �
 
 ## 🎥 Demo
 
-<video src="./Demo.mp4" width="720" controls>
-  Your browser does not support embedded videos.  
-  👉 [Click here to watch the demo](./Demo.mp4)
-</video>
+https://github.com/user-attachments/assets/a5b4bdd9-e218-45d9-a03c-e7516d97aa66
 
 *(Located in the root directory as `Demo.mp4`)*
-
 ---
 
 ## 📜 License
